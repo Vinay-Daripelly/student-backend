@@ -20,7 +20,10 @@ let students = [
     year: "3rd",
   },
 ];
-
+app.use((req, res, next) => {
+  console.log(`${req.method} request received for ${req.url}`);
+  next();
+});
 // ✅ GET - Fetch all students
 app.get("/students", (req, res) => {
   res.status(200).json(students);
