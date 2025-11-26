@@ -17,8 +17,8 @@ let students = [
     name: "Rahul",
     rollNo: "101",
     department: "CSE",
-    year: "3rd"
-  }
+    year: "3rd",
+  },
 ];
 
 // ✅ GET - Fetch all students
@@ -35,13 +35,13 @@ app.post("/students", (req, res) => {
     name,
     rollNo,
     department,
-    year
+    year,
   };
 
   students.push(newStudent);
   res.status(201).json({
     message: "Student added successfully",
-    student: newStudent
+    student: newStudent,
   });
 });
 
@@ -50,7 +50,7 @@ app.patch("/students/:id", (req, res) => {
   const { id } = req.params;
   const updatedData = req.body;
 
-  students = students.map(student =>
+  students = students.map((student) =>
     student.id === id ? { ...student, ...updatedData } : student
   );
 
@@ -61,9 +61,12 @@ app.patch("/students/:id", (req, res) => {
 app.delete("/students/:id", (req, res) => {
   const { id } = req.params;
 
-  students = students.filter(student => student.id !== id);
+  students = students.filter((student) => student.id !== id);
 
   res.json({ message: "Student deleted successfully" });
+});
+app.get("/test", (req, res) => {
+  res.send("Dev branch working successfully!");
 });
 
 // Server start
