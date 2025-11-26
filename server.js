@@ -71,8 +71,11 @@ app.delete("/students/:id", (req, res) => {
 app.get("/test", (req, res) => {
   res.send("Dev branch working successfully!");
 });
+// Server start only if not in test mode
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`✅ Server running on http://localhost:${PORT}`);
+  });
+}
 
-// Server start
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
-});
+module.exports = app;   // ✅ REQUIRED for automation testing
