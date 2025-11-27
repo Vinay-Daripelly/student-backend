@@ -1,3 +1,4 @@
+const client = require("prom-client");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -9,6 +10,9 @@ const PORT = 5000;
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+// ✅ Prometheus Metrics Setup
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics({ timeout: 5000 });
 
 // In-memory Student Database
 let students = [
@@ -20,10 +24,32 @@ let students = [
     year: "3rd",
   },
 ];
+// ✅ Prometheus Metrics Endpoint
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", client.register.contentType);
+  const metrics = await client.register.metrics();
+  res.end(metrics);
+});
+// ✅ Custom HTTP Request Counter
+const httpRequestCounter = new client.Counter({
+  name: "http_requests_total",
+  help: "Total number of HTTP requests",
+  labelNames: ["method", "route", "status"]
+});
+
 app.use((req, res, next) => {
+  res.on("finish", () => {
+    httpRequestCounter.labels(
+      req.method,
+      req.route?.path || req.url,
+      res.statusCode
+    ).inc();
+  });
+
   console.log(`${req.method} request received for ${req.url}`);
   next();
 });
+
 // ✅ GET - Fetch all students
 app.get("/students", (req, res) => {
   res.status(200).json(students);
